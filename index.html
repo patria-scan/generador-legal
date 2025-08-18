@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Etiquetas LEGAL</title>
+    <style>
+        body {
+            font-family: Calibri, Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f2f5;
+        }
+        .controls {
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            background-color: #fff;
+        }
+        .controls h1 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+        .controls label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .controls input[type="number"], .controls button {
+            padding: 8px 12px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .controls button {
+            background-color: #28a745; /* Color verde para diferenciar */
+            color: white;
+            cursor: pointer;
+            margin-top: 15px;
+            border: none;
+        }
+        
+        #output {
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* Espacio entre etiquetas */
+        }
+
+        .label-wrapper {
+            position: relative;
+            padding-top: 15px;
+            width: fit-content;
+        }
+
+        .label-identifier {
+            position: absolute;
+            top: 0;
+            left: 5px;
+            font-size: 8pt;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .single-label {
+            display: flex;
+            align-items: center;
+            padding: 6px 10px;
+            border: 1px solid #000;
+            border-radius: 5px;
+            background-color: #ffffff;
+        }
+
+        .label-text {
+            font-size: 14pt;
+            white-space: nowrap;
+            margin-right: 10px;
+        }
+
+        .label-qr img {
+            width: 32px;
+            height: 32px;
+            display: block;
+        }
+
+        @media print {
+            body {
+                margin: 1cm;
+                background-color: #fff;
+            }
+            .controls {
+                display: none;
+            }
+            /* Se mantiene el formato de 2 columnas para imprimir eficientemente */
+            #output {
+                column-count: 2;
+                column-gap: 0;
+                column-rule: 1px solid #000;
+                flex-direction: initial;
+            }
+            .label-wrapper {
+                break-inside: avoid;
+                padding-top: 18px; /* Ajuste para impresión */
+            }
+             .single-label {
+                box-shadow: none;
+                border-radius: 0;
+                margin-top: -1px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <h1>Generador de Etiquetas LEGAL</h1>
+        <div>
+            <label for="startNum">Desde RECLAMACION-SD-</label>
+            <input type="number" id="startNum" value="20251869">
+        </div>
+        <div style="margin-top: 10px;">
+            <label for="endNum">Hasta RECLAMACION-SD-</label>
+            <input type="number" id="endNum" value="20251880">
+        </div>
+        <button onclick="generateLabels()">Generar Etiquetas LEGAL</button>
+    </div>
+
+    <div id="output"></div>
+
+    <script>
+        function createLabel(text, qrContent, identifier) {
+            const qrUrl = `https://bwipjs-api.metafloor.com/?bcid=datamatrix&text=${encodeURIComponent(qrContent)}`;
+            
+            const wrapperDiv = document.createElement('div');
+            wrapperDiv.className = 'label-wrapper';
+
+            const identifierSpan = document.createElement('span');
+            identifierSpan.className = 'label-identifier';
+            identifierSpan.textContent = identifier;
+
+            const labelDiv = document.createElement('div');
+            labelDiv.className = 'single-label';
+
+            const textSpan = document.createElement('span');
+            textSpan.className = 'label-text';
+            textSpan.textContent = text;
+
+            const qrDiv = document.createElement('div');
+            qrDiv.className = 'label-qr';
+            const qrImg = document.createElement('img');
+            qrImg.src = qrUrl;
+            qrDiv.appendChild(qrImg);
+
+            labelDiv.appendChild(textSpan);
+            labelDiv.appendChild(qrDiv);
+            
+            wrapperDiv.appendChild(identifierSpan);
+            wrapperDiv.appendChild(labelDiv);
+
+            return wrapperDiv;
+        }
+
+        function generateLabels() {
+            const startNum = parseInt(document.getElementById('startNum').value);
+            const endNum = parseInt(document.getElementById('endNum').value);
+            const outputDiv = document.getElementById('output');
+
+            if (isNaN(startNum) || isNaN(endNum) || startNum > endNum) {
+                alert("Por favor, introduce un rango de números válido.");
+                return;
+            }
+
+            outputDiv.innerHTML = ''; 
+
+            for (let i = startNum; i <= endNum; i++) {
+                const fullId = `RECLAMACION-SD-${i}`;
+                
+                const fullNumberStr = String(i);
+                const lastFourDigits = fullNumberStr.slice(-4);
+                const yearDigits = fullNumberStr.substring(2, 4);
+                
+                const calculatedValue = parseInt(lastFourDigits, 10) + 1;
+                
+                const incrementedFour = String(calculatedValue).padStart(4, '0');
+
+                // Crear únicamente la etiqueta de tipo LEGAL
+                const legalQrContent = `${yearDigits}*${incrementedFour}`;
+                const legalLabel = createLabel(fullId, legalQrContent, 'LEGAL');
+                
+                outputDiv.appendChild(legalLabel);
+            }
+        }
+    </script>
+
+</body>
+</html>
