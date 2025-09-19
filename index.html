@@ -40,9 +40,16 @@
         }
         
         #output {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px; 
+        }
+
+        .label-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: flex-start;
         }
 
         .label-wrapper {
@@ -66,6 +73,7 @@
             border: 1px solid #000;
             border-radius: 5px;
             background-color: #ffffff;
+            width: fit-content;
         }
 
         .label-text {
@@ -82,7 +90,7 @@
 
         @media print {
             body {
-                margin: 0.5cm;
+                margin: 1cm;
                 background-color: #fff;
             }
             .controls {
@@ -90,14 +98,6 @@
             }
             .single-label {
                 box-shadow: none;
-            }
-            #output {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
-            }
-            /* Ocultar el pie de página de impresión para evitar desperdicio de espacio */
-            @page {
-                margin: 0;
             }
         }
     </style>
@@ -165,6 +165,9 @@
             outputDiv.innerHTML = ''; 
 
             for (let i = startNum; i <= endNum; i++) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'label-row';
+
                 const fullId = `RECLAMACION-SD-${i}`;
                 
                 const fullNumberStr = String(i);
@@ -178,12 +181,14 @@
                 // Crear etiqueta DPA/RC
                 const dpaQrContent = `${yearDigits}${incrementedFour}`;
                 const dpaLabel = createLabel(fullId, dpaQrContent, 'DPA/RC');
-                outputDiv.appendChild(dpaLabel);
+                rowDiv.appendChild(dpaLabel);
 
                 // Crear etiqueta DP
                 const dpQrContent = `${yearDigits}#${incrementedFour}`;
                 const dpLabel = createLabel(fullId, dpQrContent, 'DP');
-                outputDiv.appendChild(dpLabel);
+                rowDiv.appendChild(dpLabel);
+                
+                outputDiv.appendChild(rowDiv);
             }
         }
     </script>
