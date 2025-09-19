@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Etiquetas LEGAL</title>
+    <title>Generador de Etiquetas Múltiples</title>
     <style>
         body {
             font-family: Calibri, Arial, sans-serif;
@@ -32,7 +32,7 @@
             border: 1px solid #ccc;
         }
         .controls button {
-            background-color: #28a745; /* Color verde para diferenciar */
+            background-color: #007bff;
             color: white;
             cursor: pointer;
             margin-top: 15px;
@@ -40,15 +40,14 @@
         }
         
         #output {
-            display: flex;
-            flex-direction: column;
-            gap: 12px; /* Espacio entre etiquetas */
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
         }
 
         .label-wrapper {
             position: relative;
             padding-top: 15px;
-            width: fit-content;
         }
 
         .label-identifier {
@@ -83,27 +82,22 @@
 
         @media print {
             body {
-                margin: 1cm;
+                margin: 0.5cm;
                 background-color: #fff;
             }
             .controls {
                 display: none;
             }
-            /* Se mantiene el formato de 2 columnas para imprimir eficientemente */
-            #output {
-                column-count: 2;
-                column-gap: 0;
-                column-rule: 1px solid #000;
-                flex-direction: initial;
-            }
-            .label-wrapper {
-                break-inside: avoid;
-                padding-top: 18px; /* Ajuste para impresión */
-            }
-             .single-label {
+            .single-label {
                 box-shadow: none;
-                border-radius: 0;
-                margin-top: -1px;
+            }
+            #output {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            /* Ocultar el pie de página de impresión para evitar desperdicio de espacio */
+            @page {
+                margin: 0;
             }
         }
     </style>
@@ -111,16 +105,16 @@
 <body>
 
     <div class="controls">
-        <h1>Generador de Etiquetas LEGAL</h1>
+        <h1>Generador de Etiquetas Múltiples</h1>
         <div>
             <label for="startNum">Desde RECLAMACION-SD-</label>
-            <input type="number" id="startNum" value="20251869">
+            <input type="number" id="startNum" value="20251868">
         </div>
         <div style="margin-top: 10px;">
             <label for="endNum">Hasta RECLAMACION-SD-</label>
-            <input type="number" id="endNum" value="20251880">
+            <input type="number" id="endNum" value="20251870">
         </div>
-        <button onclick="generateLabels()">Generar Etiquetas LEGAL</button>
+        <button onclick="generateLabels()">Generar Etiquetas</button>
     </div>
 
     <div id="output"></div>
@@ -181,11 +175,15 @@
                 
                 const incrementedFour = String(calculatedValue).padStart(4, '0');
 
-                // Crear únicamente la etiqueta de tipo LEGAL
-                const legalQrContent = `${yearDigits}*${incrementedFour}`;
-                const legalLabel = createLabel(fullId, legalQrContent, 'LEGAL');
-                
-                outputDiv.appendChild(legalLabel);
+                // Crear etiqueta DPA/RC
+                const dpaQrContent = `${yearDigits}${incrementedFour}`;
+                const dpaLabel = createLabel(fullId, dpaQrContent, 'DPA/RC');
+                outputDiv.appendChild(dpaLabel);
+
+                // Crear etiqueta DP
+                const dpQrContent = `${yearDigits}#${incrementedFour}`;
+                const dpLabel = createLabel(fullId, dpQrContent, 'DP');
+                outputDiv.appendChild(dpLabel);
             }
         }
     </script>
