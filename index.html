@@ -178,16 +178,11 @@
                 
                 const incrementedFour = String(calculatedValue).padStart(4, '0');
 
-                // Crear etiqueta DPA/RC
-                const dpaQrContent = `${yearDigits}${incrementedFour}`;
-                const dpaLabel = createLabel(fullId, dpaQrContent, 'DPA/RC');
-                rowDiv.appendChild(dpaLabel);
+                // Crear etiqueta LEGAL
+                const legalQrContent = `${yearDigits}*${incrementedFour}`;
+                const legalLabel = createLabel(fullId, legalQrContent, 'LEGAL');
+                rowDiv.appendChild(legalLabel);
 
-                // Crear etiqueta DP
-                const dpQrContent = `${yearDigits}#${incrementedFour}`;
-                const dpLabel = createLabel(fullId, dpQrContent, 'DP');
-                rowDiv.appendChild(dpLabel);
-                
                 outputDiv.appendChild(rowDiv);
             }
         }
