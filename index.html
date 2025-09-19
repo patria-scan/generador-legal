@@ -40,16 +40,10 @@
         }
         
         #output {
-            display: flex;
-            flex-direction: column;
-            gap: 10px; 
-        }
-
-        .label-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: flex-start;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 columnas en pantalla */
+            gap: 15px;
+            padding: 5px;
         }
 
         .label-wrapper {
@@ -90,7 +84,7 @@
 
         @media print {
             body {
-                margin: 1cm;
+                margin: 0;
                 background-color: #fff;
             }
             .controls {
@@ -98,6 +92,14 @@
             }
             .single-label {
                 box-shadow: none;
+            }
+            #output {
+                grid-template-columns: repeat(2, 1fr); /* 2 columnas en la impresión */
+                gap: 10px;
+                padding: 1cm; /* Margen para asegurar que no se corten */
+            }
+            @page {
+                margin: 0; /* Elimina los márgenes de la página de la impresora */
             }
         }
     </style>
@@ -165,9 +167,6 @@
             outputDiv.innerHTML = ''; 
 
             for (let i = startNum; i <= endNum; i++) {
-                const rowDiv = document.createElement('div');
-                rowDiv.className = 'label-row';
-
                 const fullId = `RECLAMACION-SD-${i}`;
                 
                 const fullNumberStr = String(i);
@@ -181,9 +180,7 @@
                 // Crear etiqueta LEGAL
                 const legalQrContent = `${yearDigits}*${incrementedFour}`;
                 const legalLabel = createLabel(fullId, legalQrContent, 'LEGAL');
-                rowDiv.appendChild(legalLabel);
-
-                outputDiv.appendChild(rowDiv);
+                outputDiv.appendChild(legalLabel);
             }
         }
     </script>
